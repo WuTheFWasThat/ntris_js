@@ -148,25 +148,51 @@ Board.prototype.nextBlock = function(swap) {
 }
 
 Board.prototype.playTetrisGod = function(score) {
-  return Math.floor(Block.TYPES[this.difficultyLevel(score)]*Math.random());
+  var level = this.difficultyLevel(score);
+  var leveli = Block.TYPES[level];
+  var nleveli = Block.TYPES[level + 1];
+  return Math.floor(leveli + (nleveli - leveli) * Math.random());
 }
 
 Board.prototype.difficultyLevel = function(score) {
-  if (Block.LEVELS === 1) {
-    return 0;
-  }
+  // numSlots = number of slots for appending blocks (to 1 initial block)
+  // p = probability of appending each slot
+
+  // Scores 0 - 100:
+  //   Starts at 4 slots, probability 75% (3)
+  //   Ends at 4 slots, probability 80% (3.2)
+  // Scores 100 - 200
+  //   Starts at 5 slots, probability 64% (3.2)
+  //   Ends at 5 slots, probability 68% (3.4)
+  // Scores 200 - 300
+  //   Starts at 5 slots, probability 64% (3.4)
+  //   Ends at 5 slots, probability 68% (3.6)
+
+  // number of points before we increment a level
+  var levelIncrement = 50;
+  var normalizedScore = score / levelIncrement;
+
+  var level = Math.min( Math.floor(normalizedScore), Block.LEVELS - 5 );
+  var progress = normalizedScore - level;
+
+  var numSlots = level + 4;
+  // interpolate between having average 3 + (level/5) and 3 + (level + 1)/5
+  // so,
+  // p interpolates between (15 + level) / (numSlots * 5) and (16 + level) / (numSlots * 5)
+  // so,
+  // p = (15 + level + progress) / (numSlots * 5)
+  var p = (15 + level + progress ) / (numSlots * 5)
+  console.log(numSlots, p, numSlots * p);
+
   // Calculate the ratio r between the probability of different levels.
-  var p = Math.random();
-  var x = 2.0*(score - Constants.HALFRSCORE)/Constants.HALFRSCORE;
-  var r = (Constants.MAXR - Constants.MINR)*this.sigmoid(x) + Constants.MINR;
-  // Run through difficulty levels and compare p to a sigmoid for each level.
-  for (var i = 1; i < Block.LEVELS ; i++) {
-    var x = 2.0*(score - i*Constants.LEVELINTERVAL)/Constants.LEVELINTERVAL;
-    if (p > Math.pow(r, i)*this.sigmoid(x)) {
-      return i - 1;
+  var difficulty = 0;
+  for (var i = 0; i < numSlots; i++) {
+    if (Math.random() < p) {
+      difficulty++;
     }
   }
-  return Block.LEVELS - 1;
+  console.log('difficulty', difficulty)
+  return difficulty;
 }
 
 Board.prototype.sigmoid = function(x) {
