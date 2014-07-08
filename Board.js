@@ -100,24 +100,30 @@ Board.prototype.update = function() {
   }
 
   if (this.state === Constants.PLAYING) {
+    var finish = (function() {
+      this.graphics.drawBlock(this.block);
+
+      if (this.block.rowsFree < 0) {
+        this.state = Constants.GAMEOVER;
+      }
+    }).bind(this);
+
     this.frame = (this.frame + 1) % Constants.MAXFRAME;
 
     this.graphics.eraseBlock(this.block);
     if (!this.held && keys.indexOf(Action.HOLD) >= 0) {
       this.block = this.nextBlock(this.block);
-    } else {
-      var result = Physics.moveBlock(this.block, this.data, this.frame, keys);
+      return finish();
+    }
+
+    Physics.moveBlock(this.block, this.data, this.frame, keys, (function(result) {
       if (result.place) {
         this.score += result.score;
         this.redraw();
         this.block = this.nextBlock();
       }
-    }
-    this.graphics.drawBlock(this.block);
-
-    if (this.block.rowsFree < 0) {
-      this.state = Constants.GAMEOVER;
-    }
+      return finish();
+    }).bind(this));
   }
 }
 

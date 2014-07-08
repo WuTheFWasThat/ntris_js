@@ -7,7 +7,7 @@ var Physics = {};
 // following keys:
 //    place: true if the block was placed on the board
 //    score: the number of points scored by the placement
-Physics.moveBlock = function(block, data, frame, keys) {
+Physics.moveBlock = function(block, data, frame, keys, cb) {
   var shift = 0;
   var drop = frame % Constants.GRAVITY === 0;
   var turn = 0;
@@ -27,7 +27,7 @@ Physics.moveBlock = function(block, data, frame, keys) {
       turn = -1;
     } else if (key === Action.DROP) {
       block.y += block.rowsFree;
-      return {place: true, score: this.placeBlock(block, data)};
+      return cb({place: true, score: this.placeBlock(block, data)});
     }
   }
 
@@ -85,11 +85,11 @@ Physics.moveBlock = function(block, data, frame, keys) {
       block.localStickFrames--;
     }
     if (block.localStickFrames <= 0 || block.globalStickFrames <= 0) {
-      return {place: true, score: this.placeBlock(block, data)};
+      return cb({place: true, score: this.placeBlock(block, data)});
     }
   }
 
-  return {place: false};
+  return cb({place: false});
 }
 
 // Tries to shove the block away from obstructing squares and the bottom edge.
