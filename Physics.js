@@ -127,7 +127,7 @@ Physics.placeBlock = function(block, data) {
     var offset = offsets[i];
     data[offset.y][offset.x] = block.color;
   }
-  return Constants.POINTS[this.removeRows(data)];
+  return Constants.POINTS(this.removeRows(data));
 }
 
 // Modifies data and returns the number of rows cleared from it.

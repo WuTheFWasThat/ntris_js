@@ -10,7 +10,7 @@ Constants.ROWS = (Constants.VISIBLEROWS + 10 - 1);
 Constants.COLS = 12;
 
 // Screen size constants.
-Constants.SQUAREWIDTH = 14;
+Constants.SQUAREWIDTH = 20;
 
 // Game states.
 Constants.PLAYING = 0;
@@ -49,7 +49,9 @@ Constants.MAXR = 0.9;
 Constants.HALFRSCORE = 480;
 
 // Points given for each number of rows cleared.
-Constants.POINTS = [0, 1, 3, 7, 15, 31, 63, 79, 87, 91, 93];
+Constants.POINTS = function(x) {
+  return x;
+}
 
 return Constants;
 })();

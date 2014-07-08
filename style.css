@@ -87,7 +87,7 @@
   z-index: 3;
 }
 
-.ntris-game .ntris-sideboard .ntris-score {
+.ntris-game .ntris-sideboard .ntris-stats {
   bottom: 0;
   color: white;
   position: absolute;

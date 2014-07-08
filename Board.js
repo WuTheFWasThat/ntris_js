@@ -55,6 +55,7 @@ Board.prototype.reset = function() {
   this.held = false;
   this.heldBlockType = -1;
   this.score = 0;
+  this.combo = 0;
   this.state = Constants.PLAYING;
 
   this.preview = [];
@@ -108,7 +109,12 @@ Board.prototype.update = function() {
     } else {
       var result = Physics.moveBlock(this.block, this.data, this.frame, keys);
       if (result.place) {
-        this.score += result.score;
+        if (result.score) {
+          this.combo++;
+        } else {
+          this.combo = 0;
+        }
+        this.score += result.score + Math.max(0, this.combo - 1);
         this.redraw();
         this.block = this.nextBlock();
       }

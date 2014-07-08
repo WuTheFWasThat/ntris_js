@@ -82,12 +82,40 @@ Graphics.prototype.build = function(target) {
   result.hold_overlay = $('<div>').addClass('ntris-hold-overlay');
   result.hold.append(result.hold_overlay);
 
-  result.score = $('<div>').addClass('ntris-score').css({
-    'font-size': this.squareWidth,
-    'bottom': 0,
+  result.score = $('<span>').addClass('ntris-score')
+                 .css({
+                   'float': 'right'
+                 }).text(0);
+  result.combo = $('<span>').addClass('ntris-combo')
+                 .css({
+                   'color': 'red',
+                   'float': 'right'
+                 }).text(0);
+
+  result.stats = $('<div>').addClass('ntris-stats').css({
+    'font-size': this.squareWidth - 5,
     'right': this.squareWidth/4,
-  }).text(0);
-  sideboard.append(result.score);
+  }).append(
+    $('<div>').css({'bottom': 0}).append(
+      $('<span>').css({
+        'float': 'left',
+        'color': 'white',
+      }).text('Score')
+    ).append(
+      result.score
+    )
+  ).append(
+    $('<div>').css({'bottom': 0}).append(
+      $('<span>').css({
+        'float': 'left',
+        'color': 'white',
+      }).text('Combo')
+    ).append(
+      result.combo
+    )
+  )
+
+  sideboard.append(result.stats);
 
   return result;
 }
@@ -274,6 +302,7 @@ Graphics.prototype.drawUI = function(board) {
   this.delta.heldBlockType = board.heldBlockType;
   this.delta.score = board.score;
   this.delta.state = board.state;
+  this.delta.combo = board.combo;
   this.delta.pauseReason = board.pauseReason;
 }
 
@@ -300,8 +329,19 @@ Graphics.prototype.flip = function() {
     this.updateHeldBlockType();
   }
   if (this.state.score !== this.delta.score) {
-    this.elements.score.text(this.delta.score);
     this.state.score = this.delta.score;
+    this.elements.score.text(this.state.score);
+  }
+  if (this.state.combo !== this.delta.combo) {
+    this.state.combo = this.delta.combo;
+    var color = 'red';
+    if (this.state.combo > 0) {
+      color = 'yellow';
+    }
+    if (this.state.combo > 1) {
+      color = 'green';
+    }
+    this.elements.combo.text(this.state.combo).css('color', color);
   }
   if (this.state.state !== this.delta.state) {
     this.updateOverlay();
